@@ -90,7 +90,13 @@ options:
             - set the master flag on the zone.
         required: false
         default: false
+    read_only:
+        description:
+            - mark the zone as read only.
+        required: false
+        default: false
 
+a
 author:
     - Dimitri Savineau <dsavinea@redhat.com>
 '''
@@ -214,6 +220,7 @@ def create_zone(module, container_image=None):
     secret_key = module.params.get('secret_key')
     default = module.params.get('default')
     master = module.params.get('master')
+    read_only = module.params.get('read_only')
 
     args = [
         'create',
@@ -236,6 +243,9 @@ def create_zone(module, container_image=None):
 
     if master:
         args.append('--master')
+    
+    if read_only and not master:
+        args.append('--read-only')
 
     cmd = generate_radosgw_cmd(cluster=cluster,
                                args=args,
@@ -258,6 +268,7 @@ def modify_zone(module, container_image=None):
     secret_key = module.params.get('secret_key')
     default = module.params.get('default')
     master = module.params.get('master')
+    read_only = module.params.get('read_only')
 
     args = [
         'modify',
@@ -280,6 +291,9 @@ def modify_zone(module, container_image=None):
 
     if master:
         args.append('--master')
+
+    if read_only and not master:
+       args.append('--read-only')
 
     cmd = generate_radosgw_cmd(cluster=cluster,
                                args=args,
@@ -392,6 +406,7 @@ def run_module():
         secret_key=dict(type='str', required=False),
         default=dict(type='bool', required=False, default=False),
         master=dict(type='bool', required=False, default=False),
+        read_only=dict(type='bool', required=False, default=False),
     )
 
     module = AnsibleModule(
