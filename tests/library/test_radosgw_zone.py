@@ -33,6 +33,17 @@ fake_params = {'cluster': fake_cluster,
                'default': True,
                'master': True}
 
+fake_params_read_only = {'cluster': fake_cluster,
+               'name': fake_zone,
+               'realm': fake_realm,
+               'zonegroup': fake_zonegroup,
+               'endpoints': fake_endpoints,
+               'default': True,
+               'master': False,
+               'read_only': True}
+
+
+
 
 class TestRadosgwZoneModule(object):
 
@@ -103,6 +114,40 @@ class TestRadosgwZoneModule(object):
             '--endpoints=' + ','.join(fake_endpoints),
             '--default',
             '--master'
+        ]
+
+        assert radosgw_zone.modify_zone(fake_module) == expected_cmd
+
+    def test_create_zone_read_only(self):
+        fake_module = MagicMock()
+        fake_module.params = fake_params_read_only
+        expected_cmd = [
+            fake_binary,
+            '--cluster', fake_cluster,
+            'zone', 'create',
+            '--rgw-realm=' + fake_realm,
+            '--rgw-zonegroup=' + fake_zonegroup,
+            '--rgw-zone=' + fake_zone,
+            '--endpoints=' + ','.join(fake_endpoints),
+            '--default',
+            '--read-only'
+        ]
+
+        assert radosgw_zone.create_zone(fake_module) == expected_cmd
+
+    def test_modify_zone_read_only(self):
+        fake_module = MagicMock()
+        fake_module.params = fake_params_read_only
+        expected_cmd = [
+            fake_binary,
+            '--cluster', fake_cluster,
+            'zone', 'modify',
+            '--rgw-realm=' + fake_realm,
+            '--rgw-zonegroup=' + fake_zonegroup,
+            '--rgw-zone=' + fake_zone,
+            '--endpoints=' + ','.join(fake_endpoints),
+            '--default',
+            '--read-only'
         ]
 
         assert radosgw_zone.modify_zone(fake_module) == expected_cmd
