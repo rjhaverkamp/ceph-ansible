@@ -44,6 +44,7 @@
     secret_key: "{{ item.system_secret_key }}"
     default: "{{ true if zones | length == 1 else false }}"
     master: false
+    read_only: "{{ rgw_read_only | bool }}"
   delegate_to: "{{ groups[mon_group_name][0] }}"
   run_once: true
   loop: "{{ zones }}"
